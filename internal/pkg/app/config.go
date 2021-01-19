@@ -104,6 +104,9 @@ func (a *App) askTogglCfg(cfg *config.Toggl) trackers.Trackers {
 }
 
 func (a *App) askProjectMapping(cfg *config.File, source, dest trackers.Trackers) {
+	if cfg.ProjectMapping == nil {
+		cfg.ProjectMapping = make(map[string]string)
+	}
 	sourceProjects, err := source.ListProjects()
 	if err != nil {
 		a.logger.WithError(err).Errorf("Unable to load %s projects", source.Name())
@@ -115,7 +118,8 @@ func (a *App) askProjectMapping(cfg *config.File, source, dest trackers.Trackers
 		os.Exit(1)
 	}
 	opts := make([]string, 0, len(destProjects) + 1)
-	opts = append(opts, "None")
+	const none = "None"
+	opts = append(opts, none)
 	for _, destProject := range destProjects {
 		opts = append(opts, fmt.Sprintf("(%s) %s", dest.Name(), destProject.Name))
 	}
@@ -124,10 +128,18 @@ func (a *App) askProjectMapping(cfg *config.File, source, dest trackers.Trackers
 			Message: fmt.Sprintf("Please select to which project map the project \"(%s) %s\"", source.Name(), sourceProject.Name),
 			Options: opts,
 		}
-		var workspaceSelected string
-		if err := survey.AskOne(projectSelector, &workspaceSelected); err != nil {
+		var projectSelected string
+		if err := survey.AskOne(projectSelector, &projectSelected); err != nil {
 			a.logger.Error(err)
 			os.Exit(1)
+		}
+		if projectSelected != none {
+			for _, destProject := range destProjects {
+				if fmt.Sprintf("(%s) %s", dest.Name(), destProject.Name) == projectSelected {
+					cfg.ProjectMapping[sourceProject.Id] = destProject.Id
+					break
+				}
+			}
 		}
 	}
 }
