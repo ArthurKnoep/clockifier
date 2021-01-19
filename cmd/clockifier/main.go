@@ -11,7 +11,7 @@ import (
 
 func main() {
 	logger := logrus.New()
-	cfg, cmd, err := flag.Parse()
+	cfg, arg, cmd, err := flag.Parse()
 	if err != nil {
 		logger.Error(err)
 		os.Exit(1)
@@ -26,5 +26,7 @@ func main() {
 		application.ConfigInitCmd()
 	case flag.ConfigMappingCmd.FullCommand():
 		application.ConfigMappingCmd()
+	case flag.ImportCmd.FullCommand():
+		application.ImportCmd(arg)
 	}
 }
