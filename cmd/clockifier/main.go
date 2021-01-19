@@ -16,13 +16,15 @@ func main() {
 		logger.Error(err)
 		os.Exit(1)
 	}
-	application, err := app.NewApp(cfg, logger)
+	application, err := app.New(cfg, logger)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(1)
 	}
 	switch cmd {
-	case flag.ConfigCmd.FullCommand():
-		application.ConfigCmd()
+	case flag.ConfigInitCmd.FullCommand():
+		application.ConfigInitCmd()
+	case flag.ConfigMappingCmd.FullCommand():
+		application.ConfigMappingCmd()
 	}
 }

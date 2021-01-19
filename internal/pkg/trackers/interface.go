@@ -22,5 +22,8 @@ type (
 		HasWorkspace() bool
 		// ListWorkspaces list the current workspaces of the user
 		ListWorkspaces() ([]*Workspace, error)
+
+		// ListProjects list the current project of the user
+		ListProjects() ([]*Project, error)
 	}
 )

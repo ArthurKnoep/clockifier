@@ -11,6 +11,8 @@ type Toggl struct {
 	apiKey     string
 	baseUrl    url.URL
 	httpClient http.Client
+
+	workspaceId string
 }
 
 func (t Toggl) getUrl(path string) *url.URL {
@@ -25,6 +27,10 @@ func (t *Toggl) addAuthentication(req *http.Request) {
 
 func (t *Toggl) Name() string {
 	return "Toggl"
+}
+
+func (t *Toggl) SetWorkspaceId(wsId string) {
+	t.workspaceId = wsId
 }
 
 func New(apiKey string) *Toggl {

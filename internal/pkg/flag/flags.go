@@ -17,7 +17,9 @@ const (
 )
 var (
 	app = kingpin.New(AppName, "Clockifier is a tool to import time entries into clockify")
-	ConfigCmd = app.Command("config", "Connect the cli to toggl and clockify")
+	ConfigCmd = app.Command("config", "Manage the cli configuration")
+	ConfigInitCmd = ConfigCmd.Command("init", "Configure the cli to connect with Clockify and Toggl")
+	ConfigMappingCmd = ConfigCmd.Command("mapping", "Re-configure the project mapping")
 )
 
 func Parse() (*Config, string, error) {

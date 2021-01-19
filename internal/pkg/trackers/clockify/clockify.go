@@ -10,6 +10,8 @@ type Clockify struct {
 	apiKey     string
 	baseUrl    url.URL
 	httpClient http.Client
+
+	workspaceId string
 }
 
 func (c Clockify) getUrl(path string) *url.URL {
@@ -24,6 +26,10 @@ func (c *Clockify) addAuthentication(req *http.Request) {
 
 func (c *Clockify) Name() string {
 	return "Clockify"
+}
+
+func (c *Clockify) SetWorkspaceId(wsId string) {
+	c.workspaceId = wsId
 }
 
 func New(apiKey string) *Clockify {

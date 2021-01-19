@@ -93,7 +93,7 @@ func SaveConfig(path string, cfg *File) error {
 	if err := ensure(path); err != nil {
 		return err
 	}
-	f, err := os.OpenFile(path, os.O_RDWR, 0644)
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
