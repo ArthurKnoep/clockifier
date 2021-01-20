@@ -1,8 +1,16 @@
 package clockify
 
-import "github.com/ArthurKnoep/toggl-to-clockify/internal/pkg/trackers"
+import (
+	"time"
+
+	"github.com/ArthurKnoep/toggl-to-clockify/internal/pkg/trackers"
+)
 
 type (
+	user struct {
+		Id string `json:"id"`
+	}
+
 	workspace struct {
 		Id   string `json:"id"`
 		Name string `json:"name"`
@@ -11,6 +19,19 @@ type (
 	project struct {
 		Id   string `json:"id"`
 		Name string `json:"name"`
+	}
+
+	timeEntriesInterval struct {
+		Start time.Time `json:"start"`
+		End   time.Time `json:"end"`
+	}
+
+	timeEntries struct {
+		Id           string              `json:"id"`
+		ProjectId    string              `json:"projectId"`
+		WorkspaceId  string              `json:"workspaceId"`
+		Description  string              `json:"description"`
+		TimeInterval timeEntriesInterval `json:"timeInterval"`
 	}
 )
 
@@ -25,5 +46,15 @@ func (p *project) ToGeneric() *trackers.Project {
 	return &trackers.Project{
 		Id:   p.Id,
 		Name: p.Name,
+	}
+}
+
+func (te *timeEntries) ToGeneric() *trackers.TimeEntries {
+	return &trackers.TimeEntries{
+		Id:          te.Id,
+		ProjectId:   te.ProjectId,
+		Start:       te.TimeInterval.Start,
+		End:         te.TimeInterval.End,
+		Description: te.Description,
 	}
 }

@@ -30,6 +30,7 @@ func (a *App) applyConfig() {
 		os.Exit(1)
 	}
 	a.clockify = clockify.New(a.cfg.Clockify.ApiKey)
+	a.clockify.SetUserId(a.cfg.Clockify.UserId)
 	a.clockify.SetWorkspaceId(a.cfg.Clockify.WorkspaceId)
 	a.toggl = toggl.New(a.cfg.Toggl.ApiKey)
 	a.toggl.SetWorkspaceId(a.cfg.Toggl.WorkspaceId)

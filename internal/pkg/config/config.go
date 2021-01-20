@@ -12,6 +12,7 @@ type (
 	Clockify struct {
 		ApiKey      string `json:"api_key"`
 		WorkspaceId string `json:"workspace_id"`
+		UserId      string `json:"user_id"`
 	}
 	Toggl struct {
 		ApiKey      string `json:"api_key"`

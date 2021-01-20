@@ -77,6 +77,10 @@ func (a *App) askClockifyCfg(cfg *config.Clockify) trackers.Trackers {
 		a.loader.Stop()
 		a.logger.WithError(err).Error("Unable to connect to Clockify, verify your token or your internet connection")
 		os.Exit(1)
+	} else if cfg.UserId, err = clockifyCom.GetUserId(); err != nil {
+		a.loader.Stop()
+		a.logger.WithError(err).Error("Unable to get the id of the user on Clockify")
+		os.Exit(1)
 	}
 
 	cfg.WorkspaceId = a.askTrackersWorkspaceId(clockifyCom)

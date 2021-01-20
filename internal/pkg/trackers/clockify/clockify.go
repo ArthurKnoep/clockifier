@@ -12,6 +12,7 @@ type Clockify struct {
 	httpClient http.Client
 
 	workspaceId string
+	userId      string
 }
 
 func (c Clockify) getUrl(path string) *url.URL {
@@ -30,6 +31,10 @@ func (c *Clockify) Name() string {
 
 func (c *Clockify) SetWorkspaceId(wsId string) {
 	c.workspaceId = wsId
+}
+
+func (c *Clockify) SetUserId(uId string) {
+	c.userId = uId
 }
 
 func New(apiKey string) *Clockify {

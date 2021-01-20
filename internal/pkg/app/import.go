@@ -68,22 +68,8 @@ func (a *App) listTimeEntries(from, to time.Time, tracker trackers.Trackers) []*
 func (a *App) ImportCmd(arg *flag.Argument) {
 	a.applyConfig()
 	from, to := a.parseImportFlag(arg)
-	timeEntries := a.listTimeEntries(from, to, a.toggl)
-	//for _, timeEntry := range timeEntries {
-	//	fmt.Println(timeEntry.Id)
-	//	fmt.Println(timeEntry.ProjectId)
-	//	fmt.Println(timeEntry.Start)
-	//	fmt.Println(timeEntry.End)
-	//	fmt.Println(timeEntry.Description)
-	//}
-	timeEntries2 := a.listTimeEntries(from, to, a.clockify)
-	//for _, timeEntry := range timeEntries2 {
-	//	fmt.Println(timeEntry.Id)
-	//	fmt.Println(timeEntry.ProjectId)
-	//	fmt.Println(timeEntry.Start)
-	//	fmt.Println(timeEntry.End)
-	//	fmt.Println(timeEntry.Description)
-	//}
-	_ = timeEntries
-	_ = timeEntries2
+	srcTimeEntries := a.listTimeEntries(from, to, a.toggl)
+	destTimeEntries := a.listTimeEntries(from, to, a.clockify)
+	_ = srcTimeEntries
+	_ = destTimeEntries
 }
