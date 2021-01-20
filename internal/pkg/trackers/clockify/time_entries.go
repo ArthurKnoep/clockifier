@@ -17,8 +17,8 @@ func (c *Clockify) ListTimeEntries(from, to time.Time) ([]*trackers.TimeEntries,
 	}
 	u := c.getUrl(fmt.Sprintf("/workspaces/%s/user/%s/time-entries", c.workspaceId, c.userId))
 	q := u.Query()
-	q.Add("start", from.Format(time.RFC3339))
-	q.Add("end", to.Format(time.RFC3339))
+	q.Add("start", from.UTC().Format(time.RFC3339))
+	q.Add("end", to.UTC().Format(time.RFC3339))
 	u.RawQuery = q.Encode()
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
