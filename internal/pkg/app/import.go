@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/jinzhu/copier"
+
 	"github.com/ArthurKnoep/toggl-to-clockify/internal/pkg/flag"
 	"github.com/ArthurKnoep/toggl-to-clockify/internal/pkg/trackers"
 )
@@ -50,6 +52,8 @@ func (a *App) parseImportFlag(arg *flag.Argument) (time.Time, time.Time) {
 
 func (a *App) listTimeEntries(from, to time.Time, tracker trackers.Trackers) []*trackers.TimeEntries {
 	a.loader.Start()
+	a.loader.Suffix = fmt.Sprintf(" Looking for time entries in %s", tracker.Name())
+	defer func() {a.loader.Suffix = ""}()
 	timeEntries, err := tracker.ListTimeEntries(from, to)
 	if err != nil {
 		a.loader.Stop()
@@ -65,11 +69,65 @@ func (a *App) listTimeEntries(from, to time.Time, tracker trackers.Trackers) []*
 	return timeEntries
 }
 
+func (a *App) searchTimeEntry(entry *trackers.TimeEntries, entries []*trackers.TimeEntries) bool {
+	for _, timeEntry := range entries {
+		if timeEntry.Description == entry.Description {
+			startDelay := entry.Start.Sub(timeEntry.Start)
+			endDelay := entry.End.Sub(timeEntry.End)
+			if startDelay.Truncate(time.Minute) == 0 && endDelay.Truncate(time.Minute) == 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (a *App) translateProjectId(srcProjectId string) *string  {
+	if projectId, ok := a.cfg.ProjectMapping[srcProjectId]; ok {
+		return &projectId
+	}
+	return nil
+}
+
+func (a *App) importTimeEntries(toImport []*trackers.TimeEntries, dest trackers.Trackers) {
+	a.loader.Start()
+	defer func() {a.loader.Suffix = ""}()
+	for i, timeEntry := range toImport {
+		a.loader.Suffix = fmt.Sprintf(" [%d/%d]", i + 1, len(toImport))
+		if _, err := dest.CreateTimeEntry(timeEntry); err != nil {
+			a.loader.Stop()
+			a.logger.WithError(err).Errorf("Unable to create time entry into %s", dest.Name())
+			os.Exit(1)
+		}
+	}
+	a.loader.Stop()
+}
+
 func (a *App) ImportCmd(arg *flag.Argument) {
 	a.applyConfig()
 	from, to := a.parseImportFlag(arg)
 	srcTimeEntries := a.listTimeEntries(from, to, a.toggl)
 	destTimeEntries := a.listTimeEntries(from, to, a.clockify)
-	_ = srcTimeEntries
-	_ = destTimeEntries
+	toImport := make([]*trackers.TimeEntries, 0)
+	for _, timeEntry := range srcTimeEntries {
+		translatedId := a.translateProjectId(timeEntry.ProjectId)
+		if translatedId == nil {
+			continue
+		}
+		if !a.searchTimeEntry(timeEntry, destTimeEntries) {
+			cpyTimeEntry := trackers.TimeEntries{}
+			if err := copier.Copy(&cpyTimeEntry, timeEntry); err != nil {
+				a.logger.WithError(err).Error("Unable to copy time entry")
+				os.Exit(1)
+			}
+			cpyTimeEntry.ProjectId = *translatedId
+			toImport = append(toImport, &cpyTimeEntry)
+		}
+	}
+	var info = "entry"
+	if len(toImport) > 1 {
+		info = "entries"
+	}
+	fmt.Printf("\nFound %d time %s to import\n", len(toImport), info)
+	a.importTimeEntries(toImport, a.clockify)
 }

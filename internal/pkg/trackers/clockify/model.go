@@ -33,6 +33,13 @@ type (
 		Description  string              `json:"description"`
 		TimeInterval timeEntriesInterval `json:"timeInterval"`
 	}
+
+	createTimeEntries struct {
+		Start       time.Time `json:"start"`
+		End         time.Time `json:"end"`
+		Description string    `json:"description"`
+		ProjectId   string    `json:"projectId"`
+	}
 )
 
 func (w *workspace) ToGeneric() *trackers.Workspace {

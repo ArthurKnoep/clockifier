@@ -38,5 +38,7 @@ type (
 
 		// ListTimeEntries list time entries between two dates
 		ListTimeEntries(from, to time.Time) ([]*TimeEntries, error)
+		// CreateTimeEntry create a new time entries
+		CreateTimeEntry(entries *TimeEntries) (*TimeEntries, error)
 	}
 )

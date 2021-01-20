@@ -24,7 +24,7 @@ func (t *Toggl) ListProjects() ([]*trackers.Project, error) {
 		return nil, err
 	}
 	if resp.StatusCode >= 400 {
-		return nil, errors.New("invalid status code")
+		return nil, fmt.Errorf("invalid status code: %d", resp.StatusCode)
 	}
 	var projects []project
 	if err := json.NewDecoder(resp.Body).Decode(&projects); err != nil {

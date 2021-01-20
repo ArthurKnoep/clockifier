@@ -2,7 +2,7 @@ package clockify
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func (c *Clockify) Test() error {
 		return err
 	}
 	if resp.StatusCode >= 400 {
-		return errors.New("invalid return code from Clockify API")
+		return fmt.Errorf("invalid status code: %d", resp.StatusCode)
 	}
 	return nil
 }
@@ -35,7 +35,7 @@ func (c *Clockify) GetUserId() (string, error) {
 		return "", err
 	}
 	if resp.StatusCode >= 400 {
-		return "", errors.New("invalid return code from Clockify API")
+		return "", fmt.Errorf("invalid status code: %d", resp.StatusCode)
 	}
 	var usr user
 	if err := json.NewDecoder(resp.Body).Decode(&usr); err != nil {

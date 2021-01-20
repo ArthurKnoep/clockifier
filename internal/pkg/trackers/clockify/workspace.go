@@ -2,7 +2,7 @@ package clockify
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ArthurKnoep/toggl-to-clockify/internal/pkg/trackers"
@@ -24,7 +24,7 @@ func (c *Clockify) ListWorkspaces() ([]*trackers.Workspace, error) {
 		return nil, err
 	}
 	if resp.StatusCode >= 400 {
-		return nil, errors.New("invalid status code")
+		return nil, fmt.Errorf("invalid status code: %d", resp.StatusCode)
 	}
 	var workspaces []*workspace
 	if err := json.NewDecoder(resp.Body).Decode(&workspaces); err != nil {

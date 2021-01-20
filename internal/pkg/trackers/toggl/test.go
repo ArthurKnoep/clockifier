@@ -1,7 +1,7 @@
 package toggl
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ func (t *Toggl) Test() error {
 		return err
 	}
 	if resp.StatusCode >= 400 {
-		return errors.New("invalid return code from Clockify API")
+		return fmt.Errorf("invalid status code: %d", resp.StatusCode)
 	}
 	return nil
 }

@@ -3,6 +3,7 @@ package toggl
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,7 +30,7 @@ func (t *Toggl) ListTimeEntries(from, to time.Time) ([]*trackers.TimeEntries, er
 		return nil, err
 	}
 	if resp.StatusCode >= 400 {
-		return nil, errors.New("invalid status code")
+		return nil, fmt.Errorf("invalid status code: %d", resp.StatusCode)
 	}
 	var entries []timeEntries
 	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
@@ -42,4 +43,8 @@ func (t *Toggl) ListTimeEntries(from, to time.Time) ([]*trackers.TimeEntries, er
 		}
 	}
 	return genericEntries, nil
+}
+
+func (t *Toggl) CreateTimeEntry(timeEntry *trackers.TimeEntries) (*trackers.TimeEntries, error) {
+	panic("not implemented")
 }
