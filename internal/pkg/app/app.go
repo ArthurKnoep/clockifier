@@ -2,7 +2,9 @@ package app
 
 import (
 	"os"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/sirupsen/logrus"
 
 	"github.com/ArthurKnoep/toggl-to-clockify/internal/pkg/config"
@@ -16,6 +18,7 @@ type App struct {
 	flag      *flag.Config
 	cfg       *config.File
 	cfgLoaded bool
+	loader    *spinner.Spinner
 
 	clockify *clockify.Clockify
 	toggl    *toggl.Toggl
@@ -37,6 +40,7 @@ func New(flag *flag.Config, logger *logrus.Logger) (*App, error) {
 		logger:    logger,
 		flag:      flag,
 		cfgLoaded: false,
+		loader:    spinner.New(spinner.CharSets[14], 100*time.Millisecond),
 	}
 	configuration, err := config.LoadConfig(flag.ConfigPath.String())
 	if err != nil && err != config.NoConfigPresent {

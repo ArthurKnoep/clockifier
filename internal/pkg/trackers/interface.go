@@ -1,5 +1,7 @@
 package trackers
 
+import "time"
+
 type (
 	Workspace struct {
 		Id   string
@@ -9,6 +11,14 @@ type (
 	Project struct {
 		Id   string
 		Name string
+	}
+
+	TimeEntries struct {
+		Id          string
+		ProjectId   string
+		Start       time.Time
+		End         time.Time
+		Description string
 	}
 
 	Trackers interface {
@@ -25,5 +35,8 @@ type (
 
 		// ListProjects list the current project of the user
 		ListProjects() ([]*Project, error)
+
+		// ListTimeEntries list time entries between two dates
+		ListTimeEntries(from, to time.Time) ([]*TimeEntries, error)
 	}
 )

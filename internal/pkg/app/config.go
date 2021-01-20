@@ -27,9 +27,11 @@ func (a *App) askCfgOverride() {
 }
 
 func (a *App) askTrackersWorkspaceId(tracker trackers.Trackers) string {
+	a.loader.Start()
 	if tracker.HasWorkspace() {
 		workspaces, err := tracker.ListWorkspaces()
 		if err != nil {
+			a.loader.Stop()
 			a.logger.WithError(err).Errorf("Unable to list %s workspaces", tracker.Name())
 			os.Exit(1)
 		}
@@ -37,6 +39,7 @@ func (a *App) askTrackersWorkspaceId(tracker trackers.Trackers) string {
 		for _, workspace := range workspaces {
 			opts = append(opts, workspace.Name)
 		}
+		a.loader.Stop()
 		workspaceSelector := &survey.Select{
 			Message: "Please select a workspace",
 			Options: opts,
@@ -68,8 +71,10 @@ func (a *App) askClockifyCfg(cfg *config.Clockify) trackers.Trackers {
 		a.logger.Error("Invalid Clockify API Key")
 		os.Exit(1)
 	}
+	a.loader.Start()
 	clockifyCom := clockify.New(cfg.ApiKey)
 	if err := clockifyCom.Test(); err != nil {
+		a.loader.Stop()
 		a.logger.WithError(err).Error("Unable to connect to Clockify, verify your token or your internet connection")
 		os.Exit(1)
 	}
@@ -92,8 +97,10 @@ func (a *App) askTogglCfg(cfg *config.Toggl) trackers.Trackers {
 		a.logger.Error("Invalid Toggl API Key")
 		os.Exit(1)
 	}
+	a.loader.Start()
 	togglCom := toggl.New(cfg.ApiKey)
 	if err := togglCom.Test(); err != nil {
+		a.loader.Stop()
 		a.logger.WithError(err).Error("Unable to connect to Toggl, verify your token or your internet connection")
 		os.Exit(1)
 	}
@@ -104,16 +111,19 @@ func (a *App) askTogglCfg(cfg *config.Toggl) trackers.Trackers {
 }
 
 func (a *App) askProjectMapping(cfg *config.File, source, dest trackers.Trackers) {
+	a.loader.Start()
 	if cfg.ProjectMapping == nil {
 		cfg.ProjectMapping = make(map[string]string)
 	}
 	sourceProjects, err := source.ListProjects()
 	if err != nil {
+		a.loader.Stop()
 		a.logger.WithError(err).Errorf("Unable to load %s projects", source.Name())
 		os.Exit(1)
 	}
 	destProjects, err := dest.ListProjects()
 	if err != nil {
+		a.loader.Stop()
 		a.logger.WithError(err).Errorf("Unable to load %s projects", source.Name())
 		os.Exit(1)
 	}
@@ -123,6 +133,7 @@ func (a *App) askProjectMapping(cfg *config.File, source, dest trackers.Trackers
 	for _, destProject := range destProjects {
 		opts = append(opts, fmt.Sprintf("(%s) %s", dest.Name(), destProject.Name))
 	}
+	a.loader.Stop()
 	for _, sourceProject := range sourceProjects {
 		projectSelector := &survey.Select{
 			Message: fmt.Sprintf("Please select to which project map the project \"(%s) %s\"", source.Name(), sourceProject.Name),
