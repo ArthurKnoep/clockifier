@@ -22,6 +22,7 @@ type (
 		Clockify       Clockify          `json:"clockify"`
 		Toggl          Toggl             `json:"toggl"`
 		ProjectMapping map[string]string `json:"project_mapping"`
+		TaskMapping    map[string]string `json:"task_mapping"`
 	}
 )
 

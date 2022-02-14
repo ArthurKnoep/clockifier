@@ -39,6 +39,7 @@ type (
 		End         time.Time `json:"end"`
 		Description string    `json:"description"`
 		ProjectId   string    `json:"projectId"`
+		TaskId      *string   `json:"taskId"`
 	}
 )
 

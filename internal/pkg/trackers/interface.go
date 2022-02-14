@@ -19,6 +19,7 @@ type (
 		Start       time.Time
 		End         time.Time
 		Description string
+		TaskId      *string
 	}
 
 	Trackers interface {

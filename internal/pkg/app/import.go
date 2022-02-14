@@ -53,7 +53,7 @@ func (a *App) parseImportFlag(arg *flag.Argument) (time.Time, time.Time) {
 func (a *App) listTimeEntries(from, to time.Time, tracker trackers.Trackers) []*trackers.TimeEntries {
 	a.loader.Start()
 	a.loader.Suffix = fmt.Sprintf(" Looking for time entries in %s", tracker.Name())
-	defer func() {a.loader.Suffix = ""}()
+	defer func() { a.loader.Suffix = "" }()
 	timeEntries, err := tracker.ListTimeEntries(from, to)
 	if err != nil {
 		a.loader.Stop()
@@ -82,7 +82,7 @@ func (a *App) searchTimeEntry(entry *trackers.TimeEntries, entries []*trackers.T
 	return false
 }
 
-func (a *App) translateProjectId(srcProjectId string) *string  {
+func (a *App) translateProjectId(srcProjectId string) *string {
 	if projectId, ok := a.cfg.ProjectMapping[srcProjectId]; ok {
 		return &projectId
 	}
@@ -91,9 +91,9 @@ func (a *App) translateProjectId(srcProjectId string) *string  {
 
 func (a *App) importTimeEntries(toImport []*trackers.TimeEntries, dest trackers.Trackers) {
 	a.loader.Start()
-	defer func() {a.loader.Suffix = ""}()
+	defer func() { a.loader.Suffix = "" }()
 	for i, timeEntry := range toImport {
-		a.loader.Suffix = fmt.Sprintf(" [%d/%d]", i + 1, len(toImport))
+		a.loader.Suffix = fmt.Sprintf(" [%d/%d]", i+1, len(toImport))
 		if _, err := dest.CreateTimeEntry(timeEntry); err != nil {
 			a.loader.Stop()
 			a.logger.WithError(err).Errorf("Unable to create time entry into %s", dest.Name())
@@ -121,6 +121,10 @@ func (a *App) ImportCmd(arg *flag.Argument) {
 				os.Exit(1)
 			}
 			cpyTimeEntry.ProjectId = *translatedId
+			taskId, hasTask := a.cfg.TaskMapping[timeEntry.ProjectId]
+			if hasTask {
+				cpyTimeEntry.TaskId = &taskId
+			}
 			toImport = append(toImport, &cpyTimeEntry)
 		}
 	}
