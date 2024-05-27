@@ -15,7 +15,7 @@ type Toggl struct {
 	workspaceId string
 }
 
-func (t Toggl) getUrl(path string) *url.URL {
+func (t *Toggl) getUrl(path string) *url.URL {
 	u := t.baseUrl
 	u.Path += path
 	return &u
@@ -39,7 +39,7 @@ func New(apiKey string) *Toggl {
 		baseUrl: url.URL{
 			Scheme: "https",
 			Host:   "api.track.toggl.com",
-			Path:   "/api/v8",
+			Path:   "/api/v9",
 		},
 		httpClient: http.Client{},
 	}

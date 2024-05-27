@@ -61,7 +61,7 @@ func (a *App) askTrackersWorkspaceId(tracker trackers.Trackers) string {
 func (a *App) askClockifyCfg(cfg *config.Clockify) trackers.Trackers {
 	clockifyQuestion := &survey.Input{
 		Message: "Enter your Clockify API Key:",
-		Help: "Visit https://clockify.me/user/settings to obtain your API Key",
+		Help:    "Visit https://clockify.me/user/settings to obtain your API Key",
 	}
 	if err := survey.AskOne(clockifyQuestion, &cfg.ApiKey); err != nil {
 		a.logger.Error(err)
@@ -91,7 +91,7 @@ func (a *App) askClockifyCfg(cfg *config.Clockify) trackers.Trackers {
 func (a *App) askTogglCfg(cfg *config.Toggl) trackers.Trackers {
 	togglQuestion := &survey.Input{
 		Message: "Enter your Toggl API Key:",
-		Help: "Visit https://track.toggl.com/profile to obtain your API Key",
+		Help:    "Visit https://track.toggl.com/profile to obtain your API Key",
 	}
 	if err := survey.AskOne(togglQuestion, &cfg.ApiKey); err != nil {
 		a.logger.Error(err)
@@ -131,16 +131,16 @@ func (a *App) askProjectMapping(cfg *config.File, source, dest trackers.Trackers
 		a.logger.WithError(err).Errorf("Unable to load %s projects", source.Name())
 		os.Exit(1)
 	}
-	opts := make([]string, 0, len(destProjects) + 1)
+	opts := make([]string, 0, len(destProjects)+1)
 	const none = "None"
 	opts = append(opts, none)
 	for _, destProject := range destProjects {
 		opts = append(opts, fmt.Sprintf("(%s) %s", dest.Name(), destProject.Name))
 	}
 	a.loader.Stop()
-	for _, sourceProject := range sourceProjects {
+	for idx, sourceProject := range sourceProjects {
 		projectSelector := &survey.Select{
-			Message: fmt.Sprintf("Please select to which project map the project \"(%s) %s\"", source.Name(), sourceProject.Name),
+			Message: fmt.Sprintf("[%d/%d] Please select to which project map the project \"(%s) %s\"", idx+1, len(sourceProjects), source.Name(), sourceProject.Name),
 			Options: opts,
 		}
 		var projectSelected string

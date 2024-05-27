@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"os"
 	"time"
 
@@ -44,7 +45,7 @@ func New(flag *flag.Config, logger *logrus.Logger) (*App, error) {
 		loader:    spinner.New(spinner.CharSets[14], 100*time.Millisecond),
 	}
 	configuration, err := config.LoadConfig(flag.ConfigPath.String())
-	if err != nil && err != config.NoConfigPresent {
+	if err != nil && !errors.Is(err, config.NoConfigPresent) {
 		return nil, err
 	} else if err == nil {
 		app.cfg = configuration

@@ -15,7 +15,7 @@ func (t *Toggl) ListTimeEntries(from, to time.Time) ([]*trackers.TimeEntries, er
 	if t.workspaceId == "" {
 		return nil, errors.New("this method requires a workspace id")
 	}
-	u := t.getUrl("/time_entries")
+	u := t.getUrl("/me/time_entries")
 	q := u.Query()
 	q.Add("start_date", from.Format(time.RFC3339))
 	q.Add("end_date", to.Format(time.RFC3339))
