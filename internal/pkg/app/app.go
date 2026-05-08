@@ -15,11 +15,12 @@ import (
 )
 
 type App struct {
-	logger    *logrus.Logger
-	flag      *flag.Config
-	cfg       *config.File
-	cfgLoaded bool
-	loader    *spinner.Spinner
+	logger      *logrus.Logger
+	flag        *flag.Config
+	cfg         *config.File
+	cfgLoaded   bool
+	loader      *spinner.Spinner
+	billableMap map[string]bool
 
 	clockify *clockify.Clockify
 	toggl    *toggl.Toggl
@@ -39,10 +40,11 @@ func (a *App) applyConfig() {
 
 func New(flag *flag.Config, logger *logrus.Logger) (*App, error) {
 	app := App{
-		logger:    logger,
-		flag:      flag,
-		cfgLoaded: false,
-		loader:    spinner.New(spinner.CharSets[14], 100*time.Millisecond),
+		logger:      logger,
+		flag:        flag,
+		cfgLoaded:   false,
+		billableMap: map[string]bool{},
+		loader:      spinner.New(spinner.CharSets[14], 100*time.Millisecond),
 	}
 	configuration, err := config.LoadConfig(flag.ConfigPath.String())
 	if err != nil && !errors.Is(err, config.NoConfigPresent) {

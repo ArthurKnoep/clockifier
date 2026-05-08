@@ -20,6 +20,7 @@ type (
 		End         time.Time
 		Description string
 		TaskId      *string
+		Billable    bool
 	}
 
 	Trackers interface {
@@ -36,6 +37,8 @@ type (
 
 		// ListProjects list the current project of the user
 		ListProjects() ([]*Project, error)
+		// IsProjectBillable takes a projectId and return a boolean to indicate whether the project is billable or not
+		IsProjectBillable(projectId string) (bool, error)
 
 		// ListTimeEntries list time entries between two dates
 		ListTimeEntries(from, to time.Time) ([]*TimeEntries, error)

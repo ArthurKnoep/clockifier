@@ -15,7 +15,7 @@ type Clockify struct {
 	userId      string
 }
 
-func (c Clockify) getUrl(path string) *url.URL {
+func (c *Clockify) getUrl(path string) *url.URL {
 	u := c.baseUrl
 	u.Path += path
 	return &u

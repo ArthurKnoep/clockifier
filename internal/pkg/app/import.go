@@ -103,6 +103,18 @@ func (a *App) importTimeEntries(toImport []*trackers.TimeEntries, dest trackers.
 	a.loader.Stop()
 }
 
+func (a *App) isClockifyProjectBillable(projectId string) (bool, error) {
+	if isBillable, ok := a.billableMap[projectId]; ok {
+		return isBillable, nil
+	}
+	if isBillable, err := a.clockify.IsProjectBillable(projectId); err != nil {
+		return false, err
+	} else {
+		a.billableMap[projectId] = isBillable
+		return isBillable, nil
+	}
+}
+
 func (a *App) ImportCmd(arg *flag.Argument) {
 	a.applyConfig()
 	from, to := a.parseImportFlag(arg)
@@ -110,21 +122,27 @@ func (a *App) ImportCmd(arg *flag.Argument) {
 	destTimeEntries := a.listTimeEntries(from, to, a.clockify)
 	toImport := make([]*trackers.TimeEntries, 0)
 	for _, timeEntry := range srcTimeEntries {
-		translatedId := a.translateProjectId(timeEntry.ProjectId)
-		if translatedId == nil {
+		translatedProjectId := a.translateProjectId(timeEntry.ProjectId)
+		if translatedProjectId == nil {
 			continue
 		}
 		if !a.searchTimeEntry(timeEntry, destTimeEntries) {
+			isBillable, err := a.isClockifyProjectBillable(*translatedProjectId)
+			if err != nil {
+				a.logger.WithError(err).Error("Unable to determine project billability")
+				os.Exit(1)
+			}
 			cpyTimeEntry := trackers.TimeEntries{}
 			if err := copier.Copy(&cpyTimeEntry, timeEntry); err != nil {
 				a.logger.WithError(err).Error("Unable to copy time entry")
 				os.Exit(1)
 			}
-			cpyTimeEntry.ProjectId = *translatedId
+			cpyTimeEntry.ProjectId = *translatedProjectId
 			taskId, hasTask := a.cfg.TaskMapping[timeEntry.ProjectId]
 			if hasTask {
 				cpyTimeEntry.TaskId = &taskId
 			}
+			cpyTimeEntry.Billable = isBillable
 			toImport = append(toImport, &cpyTimeEntry)
 		}
 	}

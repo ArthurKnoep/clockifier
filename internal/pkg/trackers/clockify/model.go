@@ -17,8 +17,9 @@ type (
 	}
 
 	project struct {
-		Id   string `json:"id"`
-		Name string `json:"name"`
+		Id       string `json:"id"`
+		Name     string `json:"name"`
+		Billable bool   `json:"billable"`
 	}
 
 	timeEntriesInterval struct {
@@ -40,6 +41,7 @@ type (
 		Description string    `json:"description"`
 		ProjectId   string    `json:"projectId"`
 		TaskId      *string   `json:"taskId"`
+		Billable    bool      `json:"billable"`
 	}
 )
 

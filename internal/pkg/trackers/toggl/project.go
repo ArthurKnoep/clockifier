@@ -37,3 +37,26 @@ func (t *Toggl) ListProjects() ([]*trackers.Project, error) {
 	return genericProjects, nil
 }
 
+func (t *Toggl) IsProjectBillable(projectId string) (bool, error) {
+	if t.workspaceId == "" {
+		return false, errors.New("this method require a workspace id")
+	}
+	u := t.getUrl(fmt.Sprintf("/workspaces/%s/projects/%s", t.workspaceId, projectId))
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return false, err
+	}
+	t.addAuthentication(req)
+	resp, err := t.httpClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+	if resp.StatusCode >= 400 {
+		return false, fmt.Errorf("invalid status code: %d", resp.StatusCode)
+	}
+	var project individualProject
+	if err := json.NewDecoder(resp.Body).Decode(&project); err != nil {
+		return false, err
+	}
+	return project.Billable, nil
+}

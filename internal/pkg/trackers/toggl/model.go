@@ -18,6 +18,10 @@ type (
 		Name string `json:"name"`
 	}
 
+	individualProject struct {
+		Billable bool `json:"billable"`
+	}
+
 	timeEntries struct {
 		Id          int       `json:"id"`
 		ProjectId   int       `json:"pid"`

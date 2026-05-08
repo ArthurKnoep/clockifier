@@ -36,3 +36,27 @@ func (c *Clockify) ListProjects() ([]*trackers.Project, error) {
 	}
 	return genericProjects, nil
 }
+
+func (c *Clockify) IsProjectBillable(projectId string) (bool, error) {
+	if c.workspaceId == "" {
+		return false, errors.New("this method requires a workspace id")
+	}
+	u := c.getUrl(fmt.Sprintf("/workspaces/%s/projects/%s", c.workspaceId, projectId))
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return false, err
+	}
+	c.addAuthentication(req)
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+	if resp.StatusCode >= 400 {
+		return false, fmt.Errorf("invalid status code: %d", resp.StatusCode)
+	}
+	var project project
+	if err := json.NewDecoder(resp.Body).Decode(&project); err != nil {
+		return false, err
+	}
+	return project.Billable, nil
+}

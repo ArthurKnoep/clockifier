@@ -56,6 +56,7 @@ func (c *Clockify) CreateTimeEntry(timeEntry *trackers.TimeEntries) (*trackers.T
 		Description: timeEntry.Description,
 		ProjectId:   timeEntry.ProjectId,
 		TaskId:      timeEntry.TaskId,
+		Billable:    timeEntry.Billable,
 	}
 	var body bytes.Buffer
 	if err := json.NewEncoder(&body).Encode(&createEntity); err != nil {
